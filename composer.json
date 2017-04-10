@@ -1,0 +1,16 @@
+{
+  "name": "toy-php/bus",
+  "description": "Шина обмена сообщениями",
+  "license": "mit",
+  "authors": [
+    {
+      "name": "Seytumerov Mustafa",
+      "email": "seymus007@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "": ["src/"]
+    }
+  }
+}

@@ -25,13 +25,13 @@ class QueryBus implements Bus
      */
     public function addHandler($queryClass, $handlerClass)
     {
-        if(!class_exists($queryClass)){
+        if (!class_exists($queryClass)) {
             throw new Exception('Класс запроса недоступен');
         }
-        if(!class_exists($handlerClass)){
+        if (!class_exists($handlerClass)) {
             throw new Exception('Класс обработчика запроса недоступен');
         }
-        if(isset($this->handlers[$queryClass])){
+        if (isset($this->handlers[$queryClass])) {
             throw new Exception('Обработчик для данного запроса назначен');
         }
         $this->handlers[$queryClass] = $handlerClass;
@@ -41,11 +41,15 @@ class QueryBus implements Bus
      * Получить обработчик запроса
      * @param Query $query
      * @return string|boolean
+     * @throws Exception
      */
     public function getHandlers(Query $query)
     {
         $queryType = get_class($query);
-        return isset($this->handlers[$queryType]) ? $this->handlers[$queryType] : false;
+        if (!isset($this->handlers[$queryType])) {
+            throw new Exception('Обработчик запроса не определен');
+        }
+        return $this->handlers[$queryType];
     }
 
     /**
@@ -56,12 +60,12 @@ class QueryBus implements Bus
      */
     public function handle(Message $message)
     {
-        if(!$message instanceof Query){
+        if (!$message instanceof Query) {
             throw new Exception('Неверный тип сообщения');
         }
         $handlerClass = $this->getHandlers($message);
         $handler = new $handlerClass();
-        if(!$handler instanceof QueryHandler){
+        if (!$handler instanceof QueryHandler) {
             throw new Exception('Неверный тип обработчика');
         }
         return $handler->handle($message);

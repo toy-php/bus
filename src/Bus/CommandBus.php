@@ -25,13 +25,13 @@ class CommandBus implements Bus
      */
     public function addHandler($commandClass, $handlerClass)
     {
-        if(!class_exists($commandClass)){
+        if (!class_exists($commandClass)) {
             throw new Exception('Класс команды недоступен');
         }
-        if(!class_exists($handlerClass)){
+        if (!class_exists($handlerClass)) {
             throw new Exception('Класс обработчика команды недоступен');
         }
-        if(isset($this->handlers[$commandClass])){
+        if (isset($this->handlers[$commandClass])) {
             throw new Exception('Обработчик для данной команды назначен');
         }
         $this->handlers[$commandClass] = $handlerClass;
@@ -41,11 +41,15 @@ class CommandBus implements Bus
      * Получить обработчик команды
      * @param Command $command
      * @return string|boolean
+     * @throws Exception
      */
     public function getHandlers(Command $command)
     {
         $commandType = get_class($command);
-        return isset($this->handlers[$commandType]) ? $this->handlers[$commandType] : false;
+        if (!isset($this->handlers[$commandType])) {
+            throw new Exception('Обработчик команды не определен');
+        }
+        return $this->handlers[$commandType];
     }
 
     /**
@@ -56,12 +60,12 @@ class CommandBus implements Bus
      */
     public function handle(Message $message)
     {
-        if(!$message instanceof Command){
+        if (!$message instanceof Command) {
             throw new Exception('Неверный тип сообщения');
         }
         $handlerClass = $this->getHandlers($message);
         $handler = new $handlerClass();
-        if(!$handler instanceof CommandHandler){
+        if (!$handler instanceof CommandHandler) {
             throw new Exception('Неверный тип обработчика');
         }
         return $handler->handle($message);
